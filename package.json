@@ -31,6 +31,8 @@
     "celebrate": "^15.0.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "eth-sig-util": "^3.0.1",
+    "ethereumjs-util": "^7.1.4",
     "express": "^4.17.1",
     "express-auth": "^0.0.2",
     "express-eauth": "^2.1.0",
