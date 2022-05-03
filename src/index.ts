@@ -4,7 +4,7 @@ import { errors } from "celebrate";
 import * as dotenv from "dotenv";
 import * as secp from "@noble/secp256k1";
 import keccak256 from "keccak256";
-import sigUtil from 'eth-sig-util'
+import * as sigUtil from 'eth-sig-util'
 import * as ethUtil from "ethereumjs-util";
 
 
@@ -21,18 +21,11 @@ app.use(cors())
 app.get("/api/v1/ethsign/:address", async (req, res) => {
     const messageToSign = `${req.params.address.toUpperCase()}:1`;
 
-    console.log(`Sign test message: ${messageToSign} from ${req.socket.remoteAddress}`)
+    console.log(`Sign test message: ${messageToSign} from ${req.header("x-real-ip")}`)
+    // @ts-ignore
     const msgParams: sigUtil.MessageData<string> = { data: messageToSign };
     let signature = sigUtil.personalSign(privateKey, msgParams)
     // Test
-    
-    const msgBufferHex = Buffer.from(messageToSign, 'utf8').toString("hex");
-    console.log(msgBufferHex);
-    const address = sigUtil.recoverPersonalSignature({
-        data: msgBufferHex,
-        sig: signature,
-    });
-    console.log(address, ETH_ADDRESS);
     res.json({
         meta: {
             success: true
@@ -46,9 +39,9 @@ app.get("/api/v1/ethsign/:address", async (req, res) => {
 });
 app.get("/api/v1/sign/:address", async (req, res) => {
     let permitted_amount = 100;
-    let msg = `${req.params.address}:${permitted_amount}`;
-    console.log(`Sign test message: ${msg} from ${req.socket.remoteAddress}`)
-    let hash = keccak256(msg);
+    let messageToSign = `${req.params.address}:${permitted_amount}`;
+    console.log(`Sign test message: ${messageToSign} from ${req.header("x-real-ip")}`)
+    let hash = keccak256(messageToSign);
     let signature = secp.utils.bytesToHex(await secp.sign(hash, privateKey));
     res.json({
         meta: {
